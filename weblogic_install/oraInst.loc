@@ -1,2 +1,2 @@
 inst_group=ec2-user
-iinventory_loc=/home/ec2-user/oraInventoy
+inventory_loc=/home/ec2-user/oraInventoy
