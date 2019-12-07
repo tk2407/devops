@@ -1,0 +1,13 @@
+-
+  name: Jdk1.8 install
+  hosts: app
+  tasks:
+    - name: copy jdk1.8 tar file to app nodes
+      copy:
+        src: /tmp/jdk-8u231-linux-x64.tar
+        dest: /home/ec2-user/
+    - name: unarchive jdk1.8 tar file in app nodes
+      unarchive:
+        src: jdk-8u231-linux-x64.tar
+        dest: /home/ec2-user
+        remote_src: yes 

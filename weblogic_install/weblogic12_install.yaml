@@ -1,0 +1,8 @@
+-
+  name: Install oracle weblogic12
+  hosts: app
+  tasks:
+    - name: copy fmw jar file to app nodes
+      copy:
+        src: /home/ec2-user/fmw_12.2.1.3.0_wls.jar
+        dest: /tmp

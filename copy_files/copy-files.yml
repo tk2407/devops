@@ -1,0 +1,9 @@
+-
+  name: Copy files on target machines
+  hosts: all
+  tasks:
+    - name: Copy files
+      copy:
+        src: /tmp/test-copy.txt
+        dest: /tmp/test-copy.txt
+  
