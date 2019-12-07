@@ -1,4 +1,4 @@
--
+
   name: Jdk1.8 install
   hosts: app
   tasks:

@@ -9,4 +9,4 @@
     - name: start apache
       service:
         name: httpd
-        state: started
+        state: starte
