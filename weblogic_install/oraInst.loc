@@ -1,6 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 inst_group=ec2-user
 inventory_loc=/home/ec2-user/oraInventoy
+=======
+inst_group=ec2-user
+inventory_loc=/home/ec2-user/oraInventoy
+>>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
 =======
 inst_group=ec2-user
 inventory_loc=/home/ec2-user/oraInventoy

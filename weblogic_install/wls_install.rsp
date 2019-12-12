@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [ENGINE]
 Response File Version=12.2.1.4.0
 [GENERIC]
@@ -7,6 +8,8 @@ INSTALL_TYPE=WebLogic Server
 DECLINE_SECURITY_UPDATES=true
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
 =======
+=======
+>>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
 [ENGINE]
 Response File Version=12.2.1.4.0
 [GENERIC]
@@ -14,4 +17,7 @@ ORACLE_HOME=/home/ec2-home/fmw
 INSTALL_TYPE=WebLogic Server
 DECLINE_SECURITY_UPDATES=true
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+<<<<<<< HEAD
+>>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
+=======
 >>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6

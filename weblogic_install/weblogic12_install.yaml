@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 -
   name: Install oracle weblogic12
   hosts: app
@@ -34,6 +35,8 @@
       pause:
         minitues: 3
 =======
+=======
+>>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
 -
   name: Install oracle weblogic12
   hosts: app
@@ -64,4 +67,7 @@
         "{{ java_dir }}/bin/java -jar  {{ mw_dir }}/{{ mw_installer }} -ignoreSysPrereqs -force -novalidation
           ORACLE_HOME={{ oracle_home }} -responseFile {{ mw_dir }}/wls_install.rsp -invPtrLoc {{ mw_dir }}/oraInst.loc"
       register: command_result
+<<<<<<< HEAD
+>>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
+=======
 >>>>>>> a360bd5ec79090d18346a3dba059abbe79a221e6
