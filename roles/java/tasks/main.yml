@@ -1,0 +1,12 @@
+---
+# tasks file for jenkins
+#
+  - name: check if java path is already there
+    find:
+      path: "{{ java.JAVA_HOME }}"
+    register: result_a
+  - name: check version for installed java
+    command: "{{ java.JAVA_HOME }}/bin/java -version" 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'"
+    register:
+
+        when: "{{ result_a.stdout }}""
