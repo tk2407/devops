@@ -2,4 +2,4 @@
   name: install jenkins on app server
   hosts: app
   roles:
-    - role: jenkins
+    - role: java
