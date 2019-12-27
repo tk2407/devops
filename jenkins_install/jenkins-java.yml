@@ -1,5 +1,5 @@
-- 
- hosts: jenkins-master
+-
+ hosts: jenkins-master,jenkins-slave
  roles:
    - jenkins
  tags: jenkins
