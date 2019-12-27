@@ -2,7 +2,7 @@
 - name: Install Java 8 using YUM.
   yum:
     name: "{{java.VERSION}}"
-    state: latest  
+    state: latest
   become: true
 
 - name: Correct the alternatives to change default Java version.
@@ -11,7 +11,30 @@
     link: /bin/java
     path: "{{java.ALTERNATIVES}}"
 
-- name: Download Jenkins repo yum URL for  
+- name: set JAVA_HOME for user
+  lineinfile:
+    dest: ~/.bash_profile
+    regexp: '^# User specific environment'
+    line: "{{ item }}"
+  with_items:
+    - 'JAVA_HOME="{{java.JAVA_HOME}}"'
+    - 'export JAVA_HOME'
+    - 'PATH=$PATH:$JAVA_HOME/bin'
+
+- name: reload bash profile file
+  shell: source ~/.bash_profile
+
+- name: echo JAVA_HOME variable path
+  command: echo "$JAVA_HOME"
+  environment:
+    JAVA_HOME: "{{java.JAVA_HOME}}"
+  register: shell_out
+  
+- name: print java home path
+  debug:
+    msg: "{{shell_out.stdout}}"
+
+- name: Download Jenkins repo yum URL for
   get_url:
     url: "{{jenkins.repo_URL}}"
     dest: /etc/yum.repos.d/jenkins.repo
@@ -30,7 +53,7 @@
   become: true
 
 - name: Change Jenkins JAVA options
-  lineinfile: 
+  lineinfile:
     dest=/etc/sysconfig/jenkins
     regexp='^JENKINS_JAVA_OPTIONS='
     line=JENKINS_JAVA_OPTIONS= "{{ jenkins.JAVA_OPTIONS }}"
