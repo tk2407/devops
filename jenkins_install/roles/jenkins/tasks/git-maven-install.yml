@@ -1,0 +1,32 @@
+- name: git install on jenkins server
+  YUM:
+    name: git
+    state: latest
+  become: true
+
+- name: create maven directory under opt
+  file:
+    path: /opt/maven
+    state: directory
+
+- name: download maven zip file under maven directory
+  get_url:
+    url: http://apachemirror.wuchna.com/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip
+    dest: /opt/maven/
+
+- name: unzip deonloaded maven zip filename
+  unarchive:
+    src: /opt/maven/apache-maven-3.6.3-bin.zip
+    dest: /opt/maven
+    remote_src: yes
+
+- name: set maven env variable for user
+  lineinfile:
+    dest: ~/.bash_profile
+    regexp: '^JAVA_HOME'
+    insertafter: 'JAVA_HOME='
+    line: "{{ item }}"
+  with_items:
+    - 'M2_HOME=/opt/maven/apache-maven-3.6.3'
+    - 'M2=$M2_HOME/bin'
+    - 'PATH=$PATH:$JAVA_HOME/bin:$M2_HOME:$M2'
