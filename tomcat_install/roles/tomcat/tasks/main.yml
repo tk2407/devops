@@ -1,2 +1,5 @@
 ---
 # tasks file for tomcat
+- include: tomcat.yml
+  tags:
+      - tomcat

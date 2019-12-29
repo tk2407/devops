@@ -1,0 +1,5 @@
+-
+ hosts: jenkins-slave
+ roles:
+   - tomcat
+ tags: tomcat

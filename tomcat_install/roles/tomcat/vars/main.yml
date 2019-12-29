@@ -1,2 +1,14 @@
 ---
-# vars file for tomcat
+# vars file java:
+java:
+  VERSION: "java-1.8.0-openjdk-1.8.0.232.b09-2.el8_1"
+  ALTERNATIVES: "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-2.el8_1.x86_64/jre/bin/java"
+  JAVA_HOME: "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-2.el8_1.x86_64/jre/"
+
+xml:
+  file1: "/opt/apache-tomcat-8.5.50/webapps/host-manager/META-INF/context.xml"
+  file2: "/opt/apache-tomcat-8.5.50/webapps/manager/META-INF/context.xml"
+
+commentinxml:
+  line: '<Valve className="org.apache.catalina.valves.RemoteAddrValve"\n
+                allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'

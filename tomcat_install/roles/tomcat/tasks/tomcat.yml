@@ -1,0 +1,98 @@
+---
+- name: Install Java 8 using YUM.
+  yum:
+    name: "{{java.VERSION}}"
+    state: latest
+  become: true
+
+- name: Correct the alternatives to change default Java version.
+  alternatives:
+    name: java
+    link: /bin/java
+    path: "{{java.ALTERNATIVES}}"
+
+- name: set JAVA_HOME for user
+  lineinfile:
+    dest: ~/.bash_profile
+    regexp: '^# User specific environment'
+    insertafter: "# User specific environment"
+    line: "{{ item }}"
+  with_items:
+    - 'JAVA_HOME="{{java.JAVA_HOME}}"'
+    - 'export JAVA_HOME'
+    - 'PATH=$PATH:$JAVA_HOME/bin'
+
+- name: reload bash profile file
+  shell: source ~/.bash_profile
+
+- name: echo JAVA_HOME variable path
+  command: echo "$JAVA_HOME"
+  environment:
+    JAVA_HOME: "{{java.JAVA_HOME}}"
+  register: shell_out
+
+- name: print java home path
+  debug:
+    msg: "{{shell_out.stdout}}"
+
+- name: download tomcat tar file under opt directory
+  get_url:
+    url: http://apachemirror.wuchna.com/tomcat/tomcat-8/v8.5.50/bin/apache-tomcat-8.5.50.tar.gz
+    dest: /opt
+  become: true
+
+- name: untar downloaded tomcat zip filename
+  unarchive:
+    src: /opt/apache-tomcat-8.5.50.tar.gz
+    dest: /opt
+    remote_src: yes
+  become: true
+
+- name: change permission for start and stop scripts
+  file:
+    path: "{{ item }}"
+    mode: '0755'
+    owner: root
+    group: root
+    state: file
+  with_items:
+    - '/opt/apache-tomcat-8.5.50/bin/startup.sh'
+    - '/opt/apache-tomcat-8.5.50/bin/shutdown.sh'
+  become: true
+
+- name: create link for start and stop scripts
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  with_items:
+    - {src: /opt/apache-tomcat-8.5.50/bin/startup.sh, dest: /bin/tomcatup.sh}
+    - {src: /opt/apache-tomcat-8.5.50/bin/shutdown.sh, dest: /bin/tomcatdown.sh}
+  become: true
+
+- name: change default tomcat port number
+  replace:
+    path: /opt/apache-tomcat-8.5.50/conf/server.xml
+    regexp: '8080'
+    replace: '8090'
+  become: true
+
+- name: comment lines in context xml file
+  lineinfile:
+    path: "{{ item }}"
+    regex: "^<Valve className"
+    line: "<!--{{ commentinxml.line }}-->"
+  with_items:
+    - '{ xml.file1 }'
+    - '{ xml.file2 }'
+
+- name: start tomcat server
+  command: nohup /bin/tomcatup.sh
+  become: true
+
+- name: check tomcat server port is listening
+  shell: netstat -plant | grep 8090
+  register: port_check
+  ignore_errors: yes
+- debug:
+    msg: "{{ port_check.stdout }}"
