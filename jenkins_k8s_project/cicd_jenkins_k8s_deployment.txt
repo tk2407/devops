@@ -1,0 +1,213 @@
+Kubernetes Lab Setup:(MasterNode 1VM , WorkerNode 1VM) OS- CentOS_8_64bit
+
+Ref Link: https://medium.com/@srghimire061/how-to-install-kubernetes-on-master-and-worker-nodes-ec2f6dabdbdd
+
+
+Prerequisites:
+==========
+1. Enable the internet on both VMs
+2. #dnf clean all
+3. #rm -rf /var/cache/dnf
+4. cd /etc/yum.repos.d
+5. #sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+6. #sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+7. #dnf update
+
+Note: On Oracle Virtual box need to enable 3 network adapters 1. Host-only 2. Bridged network 3. NAT Network
+
+
+Common for Master & Worker Nodes:
+============================
+Master node components:
+→ Kube API server → controller → scheduler → etcd
+
+Worker node Components:
+→ kubelet
+→ kube-proxy
+→ container runtime
+
+1. #free -m (minimum 2 GB RAM Required)
+2. #lscpu | less (minimum 2 vCPU Required)
+3. #df -h ( min 10 GB required)
+4. #vi /etc/hosts
+       192.168.56.2    kubemaster
+       192.168.56.4    kubeworker01
+  5. #free -m
+6. #swapoff -a  ( deactivate swap)
+7. #vi /etc/fstab  (comment swap entry for permanent disable the swap)
+8. #cd /etc/yum.repos.d
+9. #wget https://download.docker.com/linux/centos/docker-ce.repo.  (Download and install docker-ce package)
+10. #yum -y install docker-ce docker-ce-cli containerd.io —allowerasing  (allow erasing can be used if there is any conflict with packages)
+11. #systemctl start docker  (start docker service and enable to start when restart OS)
+12. #systemctl enable docker
+13. #systemctl status docker
+14. #grep docker /etc/group
+15. #echo $USER
+16. #usermod -aG docker $USER
+17. #groups root
+18. #setenforce 0
+19. #sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config 
+20. #cd /etc/yum.repos.d
+21. #vi kubernetes.repo  (refer kubernetes doc page for latest version repo)
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+22. #yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+23. #cat /proc/sys/net/ipv4/ip_forward. (ip_forward should be enabled, check this is set to 1)
+24. #lsmod | grep br_netfilter  ( check if this is loaded)
+25. #rm -rf/etc/containerd/config.toml
+26. #systemctl restart containerd.service
+27. #systemctl enable kubelet.service
+
+On Master Node
+============
+    1. # kubeadm init --apiserver-advertise-address=192.168.56.2 --pod-network-cidr=10.244.0.0/16    (initialise k8s cluster)
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.56.2:6443 --token sr7fy8.nczwbhdoc972j5ee \
+	--discovery-token-ca-cert-hash sha256:4e843f6e24a2ec6cdfbb8c2eb4b25bc202ac7ed7212ecbcf7a94258c1091174a 
+
+2. #mkdir -p $HOME/.kube
+3. #cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+4. #chown $(id -u):$(id -g) $HOME/.kube/config
+5. #kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml  (download flannel yaml from git)
+6. #kubectl get pods -A. ( check for the pods status - all pods should be)
+7. #kubectl get nodes (after installing flannel master node will become ready status)
+
+On Worker Node
+============
+1. #kubeadm join 192.168.56.2:6443 --token sr7fy8.nczwbhdoc972j5ee  --discovery-token-ca-cert-hash sha256:4e843f6e24a2ec6cdfbb8c2eb4b25bc202ac7ed7212ecbcf7a94258c1091174a   ( run this command which is taken from master node 
+
+
+
+
+Jenkins on Mac
+===========
+1. Start service when needed
+
+#/usr/local/opt/openjdk/bin/java -Dmail.smtp.starttls.enable=true -jar /usr/local/opt/jenkins-lts/libexec/jenkins.war --httpListenAddress=127.0.0.1 --httpPort=8080
+
+Username:  jadmin
+Password: phoenix
+
+
+Sample devops projects Reference Links:
+===============================
+
+https://medium.com/@subhasmitadas696/devops-project-ci-cd-jenkins-pipeline-for-kubernetes-fa2ee6c4e6c6
+
+https://ghazanfaralidevops.medium.com/real-time-complete-jenkins-kubernetes-devops-project-5e08745c211e
+
+
+Git token : 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
+
+Copy: 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
+
+Docker hub token: dckr_pat_hb11HtHNsi9qSp0wrXSTI-ixxqs
+
+copy: dckr_pat_hb11HtHNsi9qSp0wrXSTI-ixxqs
+
+
+Docker network internet access for docker file RUN command: 
+===============================================
+https://stackoverflow.com/questions/31763418/docker-build-has-no-network-but-docker-run-has
+
+
+Git cmds:
+========
+
+* Git clone https://github.com/tk2407/devops.git
+* git add .
+* git commit -m 'commit message'
+* git push origin master/main
+
+
+Docker create:
+===========
+#vi dockerfile 
+FROM centos/httpd
+ADD https://www.free-css.com/assets/files/free-css-templates/download/page295/handtime.zip /var/www/html
+WORKDIR /var/www/html
+RUN yum install -y unzip && unzip handtime.zip && rm handtime.zip
+EXPOSE 80
+CMD ["/usr/sbin/httpd","-D","FOREGROUUND"]
+
+
+Jenkins pipeline syntax groovy script:
+============================
+node {
+ stage('Git Checkout'){
+     git branch: 'main', url: 'https://github.com/tk2407/dockerrepo.git'
+ }
+ stage('sending docker file to ansible server over ssh'){
+     sshagent([ 'ansible_root_password']){
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2'
+    sh 'scp /var/root/.jenkins/workspace/jenkins-k8s-demo/dockerfile root@192.168.56.2:/root/docker_repo'
+     }
+ }
+ stage('Docker Image Build'){
+     sshagent(['ansible_root_password']){
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 cd /root/docker_repo'
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker build -t $JOB_NAME:v1.$BUILD_ID /root/docker_repo/. --no-cache --network=host'
+     }
+ }
+ stage('Docker Image Tagging'){
+     sshagent(['ansible_root_password']){
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 cd /root/docker_repo'
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker image tag $JOB_NAME:v1.$BUILD_ID tk2407/$JOB_NAME:v1.$BUILD_ID'
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker image tag $JOB_NAME:v1.$BUILD_ID tk2407/$JOB_NAME:latest'
+     }
+ }     
+ stage('Push docker image to docker hub'){
+     sshagent(['ansible_root_password']){
+         withCredentials([usernamePassword(credentialsId: 'dockerhub_password', passwordVariable: 'dockerhub_pass', usernameVariable: 'dockerhub_user')]){
+            sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker login -u $dockerhub_user -p $dockerhub_pass' 
+            sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker push tk2407/$JOB_NAME:v1.$BUILD_ID'
+            sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 docker push tk2407/$JOB_NAME:latest'
+         }
+        }
+ }
+} 
+node {
+ stage('Git Checkout'){
+     git branch: 'main', url: 'https://github.com/tk2407/k8srepo.git'
+ }
+ stage('sending k8s deployment files to ansible/k8s master server over ssh'){
+     sshagent([ 'ansible_root_password']){
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2'
+    sh 'scp /var/root/.jenkins/workspace/jenkins-k8s-demo/apache.yaml root@192.168.56.2:/root/k8s_repo'
+    sh 'scp /var/root/.jenkins/workspace/jenkins-k8s-demo/service.yaml root@192.168.56.2:/root/k8s_repo'
+     }
+ }
+ stage('Deploying pod on k8s cluster'){
+     sshagent([ 'ansible_root_password']){
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 '
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 kubectl apply -f /root/k8s_repo/apache.yaml'
+    sh 'ssh -o StrictHostKeyChecking=no root@192.168.56.2 kubectl apply -f /root/k8s_repo/service.yaml'
+     }
+ }
+}
+
+
+
